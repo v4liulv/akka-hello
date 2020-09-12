@@ -1,10 +1,12 @@
-package com.tcfuture.akka.cluster.stats;
+package com.tcfuture.akka.cluster.statsclusterdy;
 
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
+import akka.actor.typed.receptionist.Receptionist;
+import akka.actor.typed.receptionist.ServiceKey;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -12,13 +14,27 @@ import java.util.Map;
 
 /**
  * @author liulv
+ *
+ * 工作actor, 用于计算，计算每个单词的长度，并将结果返回到聚和acotr合并聚和处理
  */
 public class StatsWorker extends AbstractBehavior<Message.CommandWorker> {
+
+    /**
+     * receptionist注册的服务key
+     */
+    public static ServiceKey<Message.Process> WORKER_SERVICE_KEY =
+            ServiceKey.create(Message.Process.class, "worker");
 
     private final Map<String, Integer> cache = new HashMap<String, Integer>();
 
     public StatsWorker(ActorContext<Message.CommandWorker> context) {
         super(context);
+
+        /**
+         * 调整内容：receptionist注册worker
+         */
+        context.getSystem().receptionist().tell(Receptionist.register(WORKER_SERVICE_KEY,
+                context.getSelf().narrow()));
     }
 
     /**
@@ -28,7 +44,7 @@ public class StatsWorker extends AbstractBehavior<Message.CommandWorker> {
     public static Behavior<Message.CommandWorker> create() {
         return Behaviors.setup(context ->
                 Behaviors.withTimers(timers -> {
-                    context.getLog().info("Worker starting up");
+                    context.getLog().info("Worker 启动了");
                     timers.startTimerWithFixedDelay(Message.EvictCache.INSTANCE, Message.EvictCache.INSTANCE, Duration.ofSeconds(30));
 
                     return new StatsWorker(context);

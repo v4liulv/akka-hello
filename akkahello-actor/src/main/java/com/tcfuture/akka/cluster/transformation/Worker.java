@@ -16,9 +16,6 @@ public class Worker {
     public static ServiceKey<Massage.TransformText> WORKER_SERVICE_KEY =
             ServiceKey.create(Massage.TransformText.class, "worker");
 
-
-
-
     /**
      * 创建Actor，先将自己注册到receptionist
      *

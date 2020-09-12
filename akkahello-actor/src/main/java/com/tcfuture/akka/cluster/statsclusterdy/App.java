@@ -1,4 +1,4 @@
-package com.tcfuture.akka.cluster.stats;
+package com.tcfuture.akka.cluster.statsclusterdy;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.ActorSystem;
@@ -128,13 +128,14 @@ public class App {
                     Behavior<Message.Process> workerPoolBehavior =
                             Routers.pool(numberOfWorkers,
                                     StatsWorker.create().<Message.Process>narrow())
+                                    //通过使用一致的哈希路由消息。暂时未知干嘛~~~
                                     .withConsistentHashingRouting(1, process -> process.word);
                     //创建workers actor
                     ActorRef<Message.Process> workers =
                             context.spawn(workerPoolBehavior, "WorkerRouter");
                     //创建Service actor 把当前创建workers actor作为参数
                                       ActorRef<Message.CommandService> service =
-                            context.spawn(StatsService.create(workers.narrow()), "StatsService");
+                            context.spawn(StatsService.create(), "StatsService");
 
                     // published through the receptionist to the other nodes in the cluster
                     //通过前台发布到集群中的其他节点

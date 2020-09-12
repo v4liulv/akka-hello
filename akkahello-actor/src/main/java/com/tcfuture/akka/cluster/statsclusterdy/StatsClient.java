@@ -1,13 +1,16 @@
-package com.tcfuture.akka.cluster.stats;
+package com.tcfuture.akka.cluster.statsclusterdy;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.Behaviors;
+import com.tcfuture.akka.cluster.util.WordUtils;
 
 import java.time.Duration;
 
 /**
  * @author liulv
+ *
+ * 客户端 actor: 用于定时发送请求和接收最终处理结果，打印最新处理结果
  */
 public class StatsClient {
 
@@ -32,7 +35,8 @@ public class StatsClient {
                     return Behaviors.receive(Message.Event.class)
                             .onMessageEquals(Message.Tick.INSTANCE, () -> {
                                 context.getLog().info("发送 process 请求");
-                                service.tell(new Message.ProcessText("this is the text that will be analyzed", responseAdapter));
+                                service.tell(new Message.ProcessText(WordUtils.createText(8),
+                                        responseAdapter));
                                 return Behaviors.same();
                             })
                             .onMessage(Message.ServiceResponse.class, response -> {

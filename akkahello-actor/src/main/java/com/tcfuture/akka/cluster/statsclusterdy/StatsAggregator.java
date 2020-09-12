@@ -1,4 +1,4 @@
-package com.tcfuture.akka.cluster.stats;
+package com.tcfuture.akka.cluster.statsclusterdy;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
@@ -15,6 +15,8 @@ import java.util.List;
  * @author liulv
  *
  * statsService 子actor:统计汇总器
+ * 通过service创建，是service actor的子actor,分配每个单词的子任务，然后最终多个结果进行合并聚和处理
+ * 处理完成会停止，server发现请求处理后会创建此actor
  */
 public class StatsAggregator extends AbstractBehavior<Message.Event> {
 

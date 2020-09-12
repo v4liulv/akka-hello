@@ -58,7 +58,7 @@ public class StatsService extends AbstractBehavior<Message.CommandService> {
     }
 
     private Behavior<Message.CommandService> process(Message.ProcessText command) {
-        getContext().getLog().info("Delegating request");
+        getContext().getLog().info("委托请求");
         //文本中获取单词
         List<String> words = Arrays.asList(command.text.split(" "));
         //创建一个子的actor
