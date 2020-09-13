@@ -109,6 +109,7 @@ import java.util.Map;
  *   transformation方式
  *   1. 集群订阅是推荐的方式，但是要格外类型-实例存储，并通过全局变量存储
  */
+@SuppressWarnings("DuplicatedCode")
 public class App {
     //创建服务密钥。给定的ID应该使用给定的协议唯一地定义服务。
     static final ServiceKey<Message.ProcessText> STATS_SERVICE_KEY =
@@ -124,7 +125,8 @@ public class App {
                 //如果角色为compute
                 if (cluster.selfMember().hasRole("compute")) {
                     //在每个计算节点上，都有一个服务实例委派给N个本地工人
-                    final int numberOfWorkers = context.getSystem().settings().config().getInt("stats-service.workers-per-node");
+                    final int numberOfWorkers = context.getSystem().settings().config().getInt(
+                            "stats-service.workers-per-node");
                     Behavior<Message.Process> workerPoolBehavior =
                             Routers.pool(numberOfWorkers,
                                     StatsWorker.create().<Message.Process>narrow())
@@ -136,12 +138,11 @@ public class App {
                                       ActorRef<Message.CommandService> service =
                             context.spawn(StatsService.create(workers.narrow()), "StatsService");
 
-                    // published through the receptionist to the other nodes in the cluster
-                    //通过前台发布到集群中的其他节点
+                    //通过receptionist发布到集群中的其他节点
                     context.getSystem().receptionist().tell(Receptionist.register(STATS_SERVICE_KEY, service.narrow()));
                 }
 
-                //如果角色为client
+                //角色为client 创建 client actor
                 if (cluster.selfMember().hasRole("client")) {
                     //一个路由器，它将跟踪注册到[[akka.actor.typed.receptionist.Receptionist]]的可用路由, 并通过随机选择遍历。
                     ActorRef<Message.ProcessText> serviceRouter =

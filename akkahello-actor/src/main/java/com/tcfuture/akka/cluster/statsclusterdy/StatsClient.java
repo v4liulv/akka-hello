@@ -35,8 +35,7 @@ public class StatsClient {
                     return Behaviors.receive(Message.Event.class)
                             .onMessageEquals(Message.Tick.INSTANCE, () -> {
                                 context.getLog().info("发送 process 请求");
-                                service.tell(new Message.ProcessText(WordUtils.createText(8),
-                                        responseAdapter));
+                                service.tell(new Message.ProcessText(WordUtils.createText(8), responseAdapter));
                                 return Behaviors.same();
                             })
                             .onMessage(Message.ServiceResponse.class, response -> {

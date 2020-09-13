@@ -18,10 +18,8 @@ public class Worker {
 
     /**
      * 创建Actor，先将自己注册到receptionist
-     *
      * 创建actor 行为， 接受TransformText消息，并将消息中的转换为大写后存储到TextTransformed并回复消息给接受者（消息中的发送的replyTo)
-     *
-     * @return
+     * @return Behavior<Massage.Command>
      */
     public static Behavior<Massage.Command> create() {
         return Behaviors.setup(
@@ -30,7 +28,6 @@ public class Worker {
                     //一定要注册，不然订阅消息的接收不到worker信息
                     context.getSystem().receptionist().tell(Receptionist.register(WORKER_SERVICE_KEY,
                             context.getSelf().narrow()));
-
 
                     return Behaviors.receive(Massage.Command.class)
                             .onMessage(Massage.TransformText.class, command -> {

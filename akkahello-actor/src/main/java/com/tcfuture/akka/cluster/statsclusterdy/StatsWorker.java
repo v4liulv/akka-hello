@@ -45,7 +45,8 @@ public class StatsWorker extends AbstractBehavior<Message.CommandWorker> {
         return Behaviors.setup(context ->
                 Behaviors.withTimers(timers -> {
                     context.getLog().info("Worker 启动了");
-                    timers.startTimerWithFixedDelay(Message.EvictCache.INSTANCE, Message.EvictCache.INSTANCE, Duration.ofSeconds(30));
+                    timers.startTimerWithFixedDelay(Message.EvictCache.INSTANCE,
+                            Message.EvictCache.INSTANCE, Duration.ofSeconds(30));
 
                     return new StatsWorker(context);
                 })
