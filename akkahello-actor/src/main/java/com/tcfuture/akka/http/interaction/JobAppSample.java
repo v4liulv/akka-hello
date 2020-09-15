@@ -78,11 +78,18 @@ public class JobAppSample {
         });
     }
 
+    /**
+     * 启动Actor方法，接收各种消息并最终调用自己或running方法创建Behavior，其最终都是调用running方法创建
+     * Behavior
+     *
+     * @param wasStopped 是否停止Actor，为true是停止actor暂时无意义，启动就马上停止有什么意义
+     * @return Behavior<Message>
+     */
     private static Behavior<Message> starting(boolean wasStopped) {
         return Behaviors.setup(context ->
                 BehaviorBuilder.<Message>create()
                         .onMessage(StartFailed.class, failed -> {
-                            throw new RuntimeException("Server failed to start", failed.ex);
+                            throw new RuntimeException("服务器启动失败", failed.ex);
                         })
                         .onMessage(Started.class, msg -> {
                             context.getLog().info(
@@ -102,14 +109,23 @@ public class JobAppSample {
                         .build());
     }
 
+    /**
+     * 最终创建Behavior Actor
+     *
+     * @param binding ServerBinding Http服务绑定信息
+     * @return Behavior<Message>
+     */
     private static Behavior<Message> running(ServerBinding binding) {
-        return BehaviorBuilder.<Message>create()
-                .onMessage(Stop.class, msg -> Behaviors.stopped())
-                .onSignal(PostStop.class, msg -> {
+        return Behaviors.setup(context ->
+                    BehaviorBuilder.<Message>create().onMessage(Stop.class, msg -> {
+                    context.getLog().info("Behaviors 停止...");
+                    return Behaviors.stopped();
+                }).onSignal(PostStop.class, msg -> {
+                    context.getLog().info("ServerBinding 解绑...");
                     binding.unbind();
                     return Behaviors.same();
-                })
-                .build();
+                }).build()
+        );
     }
 
     public static void main(String[] args) {
@@ -119,6 +135,7 @@ public class JobAppSample {
 
         Config config = ConfigFactory.parseMap(overrides)
                 .withFallback(ConfigFactory.load("http_test"));
+
 
         ActorSystem<Message> system = ActorSystem.create(
                 JobAppSample.create("localhost", 8080), "BuildJobsServer", config);

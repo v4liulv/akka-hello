@@ -39,9 +39,12 @@ public class JobRepository extends AbstractBehavior<JobRepository.Command> {
         final String projectName;
         @JsonProperty("status")
         final String status;
+        //持续时间
         @JsonProperty("duration")
         final Long duration;
 
+        //模式，指示创建者的参数将不受匹配约束, 使用创建者参数名称（显式或隐式）的传入对象值的属性使传入的
+        // Object属性与参数匹配。
         @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
         public Job(@JsonProperty("id") Long id, @JsonProperty("project-name") String projectName,
                    @JsonProperty("duration") Long duration) {
