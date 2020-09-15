@@ -19,10 +19,10 @@ import java.util.Optional;
 
 /**
  * @author liulv
- * Actor for use with the HttpServerWithActorsSample
+ * @since 1.0.0
  *
- * 我们将创建一个小型Web服务器，该服务器负责记录其状态和持续时间的构建作业，按ID和状态查询作业以及清除作业历史记录。
- * 首先，让我们开始定义，它将充当构建作业信息的存储库。对于我们的示例，这不是严格需要的，而仅仅是让一个实际的actor与之交互：Behavior
+ * 首先，让我们开始定义，它将充当构建作业信息的存储库。
+ * 对于我们的示例，这不是严格需要的，而仅仅是让一个实际的actor与之交互：Behavior
  */
 public class JobRepository extends AbstractBehavior<JobRepository.Command> {
 

@@ -96,6 +96,12 @@
             <artifactId>akka-http-testkit_${scala.binary.version}</artifactId>
             <version>${akka.http.version}</version>
         </dependency>
+        <!-- fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
 
         <!-- junit -->
         <dependency>

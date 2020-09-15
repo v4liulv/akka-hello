@@ -17,11 +17,13 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 /**
+ * 依赖JobRoutes、JobRepository
+ *
  * 最后，我们创建一个引导Web服务器并使用它作为actor系统的根行为：Behavior
  *
  * @author liulv
  */
-public class HttpServerWithActorsSample {
+public class JobAppSample {
 
     interface Message {}
 
@@ -119,6 +121,6 @@ public class HttpServerWithActorsSample {
                 .withFallback(ConfigFactory.load("http_test"));
 
         ActorSystem<Message> system = ActorSystem.create(
-                HttpServerWithActorsSample.create("localhost", 8080), "BuildJobsServer", config);
+                JobAppSample.create("localhost", 8080), "BuildJobsServer", config);
     }
 }
