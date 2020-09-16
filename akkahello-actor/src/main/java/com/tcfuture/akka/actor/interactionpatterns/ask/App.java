@@ -14,6 +14,13 @@ import java.util.concurrent.CompletionStage;
 /**
  * @author liulv
  * @since 1.0.0
+ *
+ * Actor Ask请求响应示例代码
+ *
+ * 有时您需要与actor系统外部的actor进行交互，这可以通过如上所述的“一劳永逸”操作或通过ask返回a的另一个版本来完成，
+ * 该响应要么成功完成，要么失败，如果成功，在指定的超时时间内没有响应。CompletionStage<Response>TimeoutException
+ *
+ * 为此，我们用于akka.actor.typed.javadsl.AskPattern.ask向Actor发送消息并获得CompletionState[Response]回复。
  */
 @Slf4j
 public class App {
