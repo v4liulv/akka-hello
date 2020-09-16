@@ -28,9 +28,9 @@ public class Printer {
                                 .onMessage(
                                         PrintMe.class,
                                         printMe -> {
-                                            context.getLog().info(printMe.message);
-                                            return Behaviors.same();
-                                        })
+                    context.getLog().info(printMe.message);
+                    return Behaviors.same();
+                })
                                 .build());
     }
 }

@@ -7,7 +7,9 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Routers;
 import akka.actor.typed.receptionist.Receptionist;
 import akka.actor.typed.receptionist.ServiceKey;
+import akka.cluster.ClusterEvent;
 import akka.cluster.typed.Cluster;
+import akka.cluster.typed.Subscribe;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -17,6 +19,7 @@ import java.util.Map;
 
 /**
  * @author liulv
+ * @since 1.0.0
  *
  * 逻辑：
  * 1. 创建集群
@@ -122,6 +125,11 @@ public class App {
                 //创建集群
                 Cluster cluster = Cluster.get(context.getSystem());
 
+                //订阅了一个ActorRef<MemberEvent>订阅服务器
+                ActorRef<ClusterEvent.MemberEvent> subscriber =
+                        context.spawn(ClusterSubscriber.create(), "ClusterSubscriber");
+                cluster.subscriptions().tell(Subscribe.create(subscriber, ClusterEvent.MemberEvent.class));
+
                 //如果角色为compute
                 if (cluster.selfMember().hasRole("compute")) {
                     //在每个计算节点上，都有一个服务实例委派给N个本地工人
@@ -135,7 +143,7 @@ public class App {
                     ActorRef<Message.Process> workers =
                             context.spawn(workerPoolBehavior, "WorkerRouter");
                     //创建Service actor 把当前创建workers actor作为参数
-                                      ActorRef<Message.CommandService> service =
+                    ActorRef<Message.CommandService> service =
                             context.spawn(StatsService.create(workers.narrow()), "StatsService");
 
                     //通过receptionist发布到集群中的其他节点
@@ -169,10 +177,10 @@ public class App {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            startup("compute", 25251);
-            startup("compute", 25252);
-            startup("compute", 0);
-            startup("client", 0);
+            startup("compute", 25251); //作为种子节点
+            startup("compute", 25252); //作为种子节点
+            startup("compute", 25253);
+            //startup("client", 0);
         } else {
             if (args.length != 2)
                 throw new IllegalArgumentException("Usage: role port");
