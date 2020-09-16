@@ -27,8 +27,14 @@ public class CookieFabric extends AbstractBehavior<CookieFabric.Command> {
         }
     }
 
+    /**
+     * 回复消息接口
+     */
     interface Reply {}
 
+    /**
+     * 回复消息-Cookie数量
+     */
     public static class Cookies implements Reply {
         public final int count;
 
@@ -37,6 +43,11 @@ public class CookieFabric extends AbstractBehavior<CookieFabric.Command> {
         }
     }
 
+    /**
+     * 回复消息-无效的请求
+     *
+     * 无效请求原因
+     */
     public static class InvalidRequest implements Reply {
         public final String reason;
 
@@ -45,6 +56,11 @@ public class CookieFabric extends AbstractBehavior<CookieFabric.Command> {
         }
     }
 
+    /**
+     * 创建Actor入口方法
+     *
+     * @return Behavior<Command>
+     */
     public static Behavior<Command> create() {
         return Behaviors.setup(CookieFabric::new);
     }
@@ -71,8 +87,8 @@ public class CookieFabric extends AbstractBehavior<CookieFabric.Command> {
         return this;
     }
 
-    public void askAndPrint(
-            ActorSystem<Void> system, ActorRef<CookieFabric.Command> cookieFabric) {
+    public void askAndPrint(ActorSystem<Void> system,
+                            ActorRef<CookieFabric.Command> cookieFabric) {
         CompletionStage<Reply> result =
                 AskPattern.ask(
                         cookieFabric,
