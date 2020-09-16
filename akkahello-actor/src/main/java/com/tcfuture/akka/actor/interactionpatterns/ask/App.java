@@ -41,7 +41,10 @@ public class App {
 
                 //ask 请求方法
                 App app = new App();
-                app.askAndMapInvalid(context.getSystem(), cookieFabric);
+                //比较全的处理响应
+                //app.askAndMapInvalid(context.getSystem(), cookieFabric);
+                //直接打印处理
+                app.askAndPrint(context.getSystem(), cookieFabric);
 
                 return Behaviors.empty();
             });
@@ -61,6 +64,7 @@ public class App {
                 replyTo -> new CookieFabric.GiveMeCookies(5, replyTo),
                 Duration.ofSeconds(3), system.scheduler());
 
+        //ask 响应结果中间处理，正常响应、模拟存储异常、直接抛出异常
         CompletionStage<CookieFabric.Cookies> cookies = result.thenCompose((CookieFabric.Reply reply) -> {
             if (reply instanceof CookieFabric.Cookies) {
                 return CompletableFuture.completedFuture((CookieFabric.Cookies) reply);
@@ -74,11 +78,45 @@ public class App {
             }
         });
 
+        ///ask 响应结果处理，成功值打印，或模拟失败打印、或请求超时无响应处理等
         cookies.whenComplete((cookiesReply, failure) -> {
-            if (cookies != null) System.out.println("Yay, " + cookiesReply.count + " cookies!");
-            else System.out.println("Boo! didn't get cookies in time. " + failure);
+            if (cookies != null){
+                if(cookiesReply != null)
+                System.out.println("Yay, " + cookiesReply.count + " cookies!");
+                else {
+                    log.warn(failure.getMessage());
+                }
+            }
+            else log.warn("Boo! didn't get cookies in time. " + failure);
         });
         // #standalone-ask-fail-future
+    }
+
+    public void askAndPrint(ActorSystem<Void> system,
+                            ActorRef<CookieFabric.Command> cookieFabric) {
+        CompletionStage<CookieFabric.Reply> result =
+                AskPattern.ask(
+                        cookieFabric,
+                        replyTo -> new CookieFabric.GiveMeCookies(5, replyTo),
+                        // asking someone requires a timeout and a scheduler, if the timeout hits without
+                        // response the ask is failed with a TimeoutException
+                        Duration.ofSeconds(3),
+                        system.scheduler());
+        //也可以使用, 但是第二个参数是Object，不是Function
+        //CompletionStage<Object> askCS = Patterns.ask(
+        //        cookieFabric,
+        //        new CookieFabric.GiveMeCookies(3, cookieFabric),
+        //        Duration.ofSeconds(3));
+
+        result.whenComplete(
+                (reply, failure) -> {
+                    if (reply instanceof CookieFabric.Cookies)
+                        System.out.println("Yay, " + ((CookieFabric.Cookies) reply).count + " cookies!");
+                    else if (reply instanceof CookieFabric.InvalidRequest)
+                        System.out.println(
+                                "No cookies for me. " + ((CookieFabric.InvalidRequest) reply).reason);
+                    else System.out.println("Boo! didn't get cookies in time. " + failure);
+                });
     }
 }
 

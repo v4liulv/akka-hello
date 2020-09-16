@@ -1,12 +1,11 @@
 package com.tcfuture.akka.actor.interactionpatterns.ask;
 
 import akka.actor.typed.ActorRef;
-import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Behavior;
-import akka.actor.typed.javadsl.*;
-
-import java.time.Duration;
-import java.util.concurrent.CompletionStage;
+import akka.actor.typed.javadsl.AbstractBehavior;
+import akka.actor.typed.javadsl.ActorContext;
+import akka.actor.typed.javadsl.Behaviors;
+import akka.actor.typed.javadsl.Receive;
 
 /**
  * @author liulv
@@ -85,33 +84,6 @@ public class CookieFabric extends AbstractBehavior<CookieFabric.Command> {
         else request.replyTo.tell(new Cookies(request.count));
 
         return this;
-    }
-
-    public void askAndPrint(ActorSystem<Void> system,
-                            ActorRef<CookieFabric.Command> cookieFabric) {
-        CompletionStage<Reply> result =
-                AskPattern.ask(
-                        cookieFabric,
-                        replyTo -> new CookieFabric.GiveMeCookies(3, replyTo),
-                        // asking someone requires a timeout and a scheduler, if the timeout hits without
-                        // response the ask is failed with a TimeoutException
-                        Duration.ofSeconds(3),
-                        system.scheduler());
-        //也可以使用, 但是第二个参数是Object，不是Function
-        //CompletionStage<Object> askCS = Patterns.ask(
-        //        cookieFabric,
-        //        new CookieFabric.GiveMeCookies(3, cookieFabric),
-        //        Duration.ofSeconds(3));
-
-        result.whenComplete(
-                (reply, failure) -> {
-                    if (reply instanceof CookieFabric.Cookies)
-                        System.out.println("Yay, " + ((CookieFabric.Cookies) reply).count + " cookies!");
-                    else if (reply instanceof CookieFabric.InvalidRequest)
-                        System.out.println(
-                                "No cookies for me. " + ((CookieFabric.InvalidRequest) reply).reason);
-                    else System.out.println("Boo! didn't get cookies in time. " + failure);
-                });
     }
 
 }
