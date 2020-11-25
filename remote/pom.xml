@@ -17,6 +17,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.tcfuture.akka</groupId>
+            <artifactId>akka-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor-typed_2.13</artifactId>
             <version>${akka.version}</version>

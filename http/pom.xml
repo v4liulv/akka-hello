@@ -18,6 +18,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.tcfuture.akka</groupId>
+            <artifactId>akka-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- akka actor test -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>

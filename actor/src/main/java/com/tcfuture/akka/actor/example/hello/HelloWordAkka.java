@@ -33,7 +33,7 @@ public class HelloWordAkka {
         //#actor-system
         //创建名字为helloakka的ActorSystem，并创建了名称为greeter监护Actor<Greeter.Greet>
         final ActorSystem<GreeterMain.SayHello> greeterMain =
-                ActorSystem.create(GreeterMain.create(), "hello akka");
+                ActorSystem.create(GreeterMain.create(), "hello_akka");
         System.out.println(greeterMain);
         //#actor-system
 
